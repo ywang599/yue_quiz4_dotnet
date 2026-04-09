@@ -14,22 +14,36 @@ variables:
 
 steps:
 - task: UseDotNet@2
+  displayName: 'Use .NET SDK'
   inputs:
     packageType: 'sdk'
-    version: '10.0.x'
+    version: '8.0.x'
 
-- script: dotnet restore yue_quiz4_dotnet_app/yue_quiz4_dotnet_app.csproj
-  displayName: 'Restore dependencies'
+- task: DotNetCoreCLI@2
+  displayName: 'Restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
 
-- script: dotnet build yue_quiz4_dotnet_app/yue_quiz4_dotnet_app.csproj --configuration $(buildConfiguration) --no-restore
-  displayName: 'Build project'
+- task: DotNetCoreCLI@2
+  displayName: 'Build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
-- script: dotnet publish yue_quiz4_dotnet_app/yue_quiz4_dotnet_app.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-  displayName: 'Publish project'
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)'
+    zipAfterPublish: true
 
 - task: PublishBuildArtifacts@1
+  displayName: 'Publish artifact'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
-  displayName: 'Publish artifact'
