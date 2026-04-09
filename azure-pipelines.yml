@@ -1,0 +1,35 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  name: Default
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '10.0.x'
+
+- script: dotnet restore yue_quiz4_dotnet_app/yue_quiz4_dotnet_app.csproj
+  displayName: 'Restore dependencies'
+
+- script: dotnet build yue_quiz4_dotnet_app/yue_quiz4_dotnet_app.csproj --configuration $(buildConfiguration) --no-restore
+  displayName: 'Build project'
+
+- script: dotnet publish yue_quiz4_dotnet_app/yue_quiz4_dotnet_app.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
+  displayName: 'Publish project'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+  displayName: 'Publish artifact'
