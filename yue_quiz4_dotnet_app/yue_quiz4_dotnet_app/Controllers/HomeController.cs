@@ -8,6 +8,7 @@ namespace yue_quiz4_dotnet_app.Controllers
     {
         public IActionResult Index()
         {
+            ViewBag.Message = "Database access has already been done on April 6, 2026 by Yue Wang";
             return View();
         }
 
